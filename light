@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo MAX: $(cat /sys/class/backlight/intel_backlight/max_brightness)
+echo $1 | tee /sys/class/backlight/intel_backlight/brightness
+

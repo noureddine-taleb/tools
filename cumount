@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [[ "$(id -u)" != "0" ]]
+then
+	echo "you're not root!" >&1
+	exit 1
+fi
+
+if [[ "$#" != "1" ]]
+then
+	echo "usage: $0 device" >&2
+	exit 1
+fi
+
+dev=$(basename $1)
+
+umount /dev/mapper/$dev
+
+cryptsetup luksClose $dev

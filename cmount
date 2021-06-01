@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [[ "$(id -u)" != "0" ]]
+then
+	echo "you're not root!" >&1
+	exit 1
+fi
+
+if [[ "$#" != "2" ]]
+then
+	echo "usage: $0 device mount_point" >&2
+	exit 1
+fi
+
+
+device_name=$(basename $1)
+
+echo "you're device name is : $device_name"
+
+cryptsetup luksOpen $1 $device_name
+
+mount -o user /dev/mapper/$device_name $2

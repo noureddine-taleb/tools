@@ -1,0 +1,61 @@
+#!/usr/bin/python
+
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import Select
+import os
+import time
+
+cc_number = os.popen("pass bank/cc").read()
+
+driver = webdriver.Firefox()
+print("goto page")
+driver.get("https://espace-client.orange.ma/sso/login")
+print("input email")
+email_input = driver.find_element_by_id("login_form_login")
+assert email_input
+email_input.clear()
+email_input.send_keys("noureddinetaleb12@gmail.com")
+email_input.send_keys(Keys.RETURN)
+
+time.sleep(20)
+assert "incorrect" not in driver.page_source
+print("input password")
+passwd = os.popen("pass web/espace-client.orange.ma").read()
+pass_input = driver.find_element_by_id("login_form__password")
+assert pass_input
+pass_input.clear()
+pass_input.send_keys(passwd)
+pass_input.send_keys(Keys.RETURN)
+
+time.sleep(20)
+print("click on 'payer vos factures'")
+driver.execute_script("arguments[0].hidden = true;", driver.find_element_by_css_selector(".sticky-wrapper"))
+pay_button = driver.find_element_by_css_selector("input[value='Payer une facture']")
+assert pay_button
+driver.execute_script("arguments[0].scrollIntoView(true);", pay_button)
+pay_button.click()
+
+time.sleep(10)
+print("input cc N")
+cc_number_input = driver.find_element_by_xpath("//input[@id='pan']")
+cc_number_input.clear()
+cc_number_input.send_keys(cc_number)
+
+emonth = os.popen("pass bank/emonth").read()
+select_emonth = driver.find_element_by_xpath("//option[@value='%d']"%(emonth))
+driver.execute_script("arguments[0].selected = true;", select_emonth)
+
+eyear = os.popen("pass bank/eyear").read()
+select_eyear = driver.find_element_by_xpath("//option[@value='%d']"%(eyear))
+driver.execute_script("arguments[0].selected = true;", select_eyear)
+
+vcode_input = driver.find_element_by_id("code-verification")
+assert vcode_input
+vcode_input.clear()
+vcode_input.send_keys(os.popen("pass bank/vcode").read())
+
+conditions_input = driver.find_element_by_xpath("//input[@id='ml']").click()
+
+submit_button = driver.find_element_by_css_selector("button.btn-success").click()

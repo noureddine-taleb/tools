@@ -1,0 +1,56 @@
+#!/bin/bash
+set -e
+
+if [ $# -lt 2 ]
+then
+	echo "usage: $0 [OPTIONS] dir where-to-put-dups" >&2
+	exit 1
+fi
+
+FIND_OPT="-maxdepth 1"
+while getopts ":r" opt; do
+	case $opt in
+		r ) 
+			FIND_OPT=
+			;;
+		\? )
+			echo "invalid args" 2>&1
+			exit 1;
+			;;
+	esac
+done
+
+shift $((OPTIND -1))
+
+DB=/tmp/.dumpdupdb # file hashes
+DBSORTED=/tmp/.dumpdupdb.sorted # sorted file hashes
+DBDUP=/tmp/.dumpdb.dup
+DBPUREDUP=/tmp/.dumpdb.dup.pure
+DBFINAL=/tmp/.dumpdb.final
+sha_len=40
+
+echo generate a hash db ...
+find $1 $FIND_OPT -type f | xargs -I{} sha1sum "{}" > $DB 
+sort -k1,1 $DB > $DBSORTED
+uniq -w $sha_len -D $DBSORTED > $DBDUP
+
+# leave one file copy out because uniq includes all the dups
+echo strip uniq copies ...
+tmp=$DBDUP
+tmp2=$(mktemp)-dumpdup
+IFS=$'\n'
+
+for line in $(uniq -w $sha_len -d $DBDUP)
+do
+	grep -v "$line" $tmp > $tmp2
+	tmp=$tmp2
+	tmp2=$(mktemp)-dumpdup
+done
+
+cp $tmp $DBPUREDUP
+cat $DBPUREDUP | cut -d' ' -f3- >$DBFINAL
+
+# corantine the duplicates
+echo moving files to $2
+mkdir -p $2
+cat $DBFINAL | xargs -I{} mv "{}" $2

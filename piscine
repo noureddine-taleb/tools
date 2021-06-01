@@ -1,0 +1,3 @@
+#!/bin/bash
+
+(curl 'https://candidature.1337.ma/piscines' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:87.0) Gecko/20100101 Firefox/87.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US' --compressed -H 'Referer: https://candidature.1337.ma/users/sign_in' -H 'Connection: keep-alive' -H '$(pass web/1337-auth-cookie) request_method=POST' -H 'Upgrade-Insecure-Requests: 1' -H 'TE: Trailers' 2>/dev/null | grep 'Aucune piscine') || wall "EMERG: checkout 1337 piscines"

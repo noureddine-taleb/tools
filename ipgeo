@@ -1,0 +1,4 @@
+#!/bin/bash
+
+curl https://freegeoip.app/json/$1 2>/dev/null | jq '.country_name'
+#curl https://json.geoiplookup.io/$1; echo

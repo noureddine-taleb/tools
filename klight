@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo MAX: $(cat /sys/class/leds/smc::kbd_backlight/max_brightness)
+echo $1 | tee /sys/class/leds/smc::kbd_backlight/brightness

