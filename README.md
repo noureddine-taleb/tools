@@ -85,3 +85,9 @@ read zlib compressed file
 ```bash
 $ zlcat zfile
 ```
+
+## hulk
+optimise cpu for performance
+```bash
+# hulk
+```
